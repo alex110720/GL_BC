@@ -27,7 +27,11 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+enum
+{
+	FORWARD,
+	BACKWARD
+};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -55,25 +59,104 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int pl = 0;
-int mod = 1;
-int del1 = 400;
+int8_t pl = 0;
+int8_t mod = 1;
+int16_t del1 = 400;
 
 
-void Mod_switch (int dir)
+void Mod_switch (int8_t dir)
 {
 	  if(dir)
 	  {
-		  mod++;
-		  if( mod > 4)
-			  mod = 1;
+		  mod == 4 ? mod = 1 : mod++;
 	  }
 	  else
 	  {
-		  mod--;
-		  if( mod < 1)
-			  mod = 4;
+		  mod == 1 ? mod = 4 : mod--;
 	  }
+}
+
+
+void All_blink()
+{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_SET);
+		HAL_Delay(del1);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
+		HAL_Delay(del1);
+}
+
+
+void Round_blink(int8_t dir)
+{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+		HAL_Delay(del1);
+
+		if(dir)
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+		HAL_Delay(del1);
+
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+		HAL_Delay(del1);
+
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, !dir);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, dir);
+		HAL_Delay(del1);
+
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+		HAL_Delay(del1);
+
+		if(dir)
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+		else
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+		HAL_Delay(del1);
+
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+		HAL_Delay(del1);
+}
+
+
+void Mod_3()
+{
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+	  	HAL_Delay(del1);
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+	  	HAL_Delay(del1);
+
+
+	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
+	  	HAL_Delay(del1);
 }
 /* USER CODE END 0 */
 
@@ -113,87 +196,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
 
-  void Mod_1()
-  {
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_SET);
-		HAL_Delay(del1);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
-		HAL_Delay(del1);
-  }
 
-
-  void Mod_2(int dir)
-  {
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-		HAL_Delay(del1);
-
-		if(dir)
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
-		else
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-		HAL_Delay(del1);
-
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-		HAL_Delay(del1);
-
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, !dir);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, dir);
-		HAL_Delay(del1);
-
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-		HAL_Delay(del1);
-
-		if(dir)
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-		else
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
-		HAL_Delay(del1);
-
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-		HAL_Delay(del1);
-  }
-
-
-  void Mod_3()
-  {
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_RESET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13, GPIO_PIN_SET);
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-	  	HAL_Delay(del1);
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-	  	HAL_Delay(del1);
-
-
-	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
-	  	HAL_Delay(del1);
-  }
 
 
 
@@ -204,16 +207,18 @@ int main(void)
 		  switch( mod )
 		  {
 		  	  case 1:
-		  		  Mod_1();
+		  		  All_blink();
 		  		  break;
 			  case 2:
-				  Mod_2(0);
+				  Round_blink(FORWARD);
 				  break;
 			  case 3:
 				  Mod_3();
 				  break;
 			  case 4:
-				  Mod_2(1);
+				  Round_blink(BACKWARD);
+				  break;
+			  default:
 				  break;
 		  }
 

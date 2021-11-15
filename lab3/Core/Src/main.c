@@ -27,7 +27,11 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+enum
+{
+	ADD,
+	SUB
+};
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -57,10 +61,11 @@ static void MX_TIM4_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-int freq[] = {78, 39, 25, 19, 15, 12, 10, 9, 8, 7};//PSC
-int prescal = 5;
-int duty = 10;
-int sel = 0;
+const int16_t freq[] = {319, 159, 106, 79, 63, 52, 44, 39, 34, 31};//PSC
+				       //5   10   15   20  25  30  35  40  45  50 kHz
+int8_t prescal = 5;
+int8_t duty = 10;
+int8_t sel = 0;
 
 
 void Select()
@@ -105,7 +110,7 @@ void Change_freq(int dir)
 	if(!dir)
 	{
 		prescal++;
-		if(prescal > 9)
+		if(prescal > (sizeof(freq)/2-1))
 			prescal = 0;
 
 	}
@@ -113,7 +118,7 @@ void Change_freq(int dir)
 	{
 		prescal--;
 		if(prescal < 0)
-			prescal = 9;
+			prescal = (sizeof(freq)/2-1);//9
 
 	}
 	TIM4->PSC = freq[prescal];
@@ -123,17 +128,11 @@ void Change_duty_cycle(int dir)
 {
 	if(!dir)
 	{
-		duty++;
-		if(duty > 19)
-			duty = 0;
-
+		duty == 19 ? duty = 0 : duty++;
 	}
 	else
 	{
-		duty--;
-		if(duty < 0)
-			duty = 19;
-
+		duty == 0 ? duty = 19 : duty--;
 	}
 	Select();
 }
@@ -211,7 +210,12 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV6;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -220,12 +224,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -251,7 +255,7 @@ static void MX_TIM4_Init(void)
 
   /* USER CODE END TIM4_Init 1 */
   htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 15;
+  htim4.Init.Prescaler = 63;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim4.Init.Period = 20-1;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -344,30 +348,28 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_PIN)
 {
 		if (GPIO_PIN == GPIO_PIN_15)
 		{
-			sel++;
-			if(sel > 4)
-				sel = 0;
+			sel == 4 ? sel = 0 : sel++;
 			Select();
 		}
 
 		if (GPIO_PIN == GPIO_PIN_11)
 		{
-			Change_freq(0);
+			Change_freq(SUB);
 		}
 
 		if (GPIO_PIN == GPIO_PIN_9)
 		{
-			Change_freq(1);
+			Change_freq(ADD);
 		}
 
 		if (GPIO_PIN == GPIO_PIN_6)
 		{
-			Change_duty_cycle(0);
+			Change_duty_cycle(SUB);
 		}
 
 		if (GPIO_PIN == GPIO_PIN_8)
 		{
-			Change_duty_cycle(1);
+			Change_duty_cycle(ADD);
 		}
 }
 

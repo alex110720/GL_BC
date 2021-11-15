@@ -1,0 +1,13 @@
+main.c:85:6:Tick_count	4	static
+main.c:90:6:ADC_pot	8	static
+main.c:106:6:ADC_extern	8	static
+main.c:123:6:ADC_intern	8	static
+main.c:140:6:LED_emergency	8	static
+main.c:183:5:main	8	static
+main.c:245:6:SystemClock_Config	88	static
+main.c:285:13:MX_ADC1_Init	24	static
+main.c:335:13:MX_ADC2_Init	24	static
+main.c:385:13:MX_ADC3_Init	24	static
+main.c:435:13:MX_TIM4_Init	64	static
+main.c:502:13:MX_GPIO_Init	40	static
+main.c:531:6:Error_Handler	4	static,ignoring_inline_asm
